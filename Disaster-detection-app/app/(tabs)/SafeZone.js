@@ -58,34 +58,12 @@ const Home = ()=>{
     }
     return (
         <>
-        {/* TEMPORARILY COMMENTING, IT DOESNT WORK FOR WEB */}
-        {/* <View style={styles.container}>
-            <MapView
-                style={StyleSheet.absoluteFillObject}
-                showsUserLocation={true}
-                region={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-                }}
-            >
-                <Marker
-                coordinate={{
-                    latitude: location.latitude,
-                    longitude: location.longitude,
-                }}
-                title="You are here"
-                pinColor="blue"
-                />
-            </MapView>
-        </View> */}
             <StatusBar style='light'/>
             <InnerContainer>
                 <HomeImage source={require('./../../assets/images/img2.webp')} resizeMode="cover" />
                 <HomeContainer>
                     <PageTitle home={true}>Welcome!</PageTitle>
-                    <SubTitle home={true}>Home Page</SubTitle>
+                    <SubTitle home={true}>Safe Zone Page</SubTitle>
                 
                         <StyledFormArea>
                             <Avatar source={require('./../../assets/images/app-logo.png')} resizeMode="cover"/>
