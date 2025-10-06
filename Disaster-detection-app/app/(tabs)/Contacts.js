@@ -16,7 +16,7 @@ import {
     LeftIcon,
     RightIcon
 } from './../../constants/styles'
-import { View, StyleSheet, ActivityIndicator, Alert, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Alert,ScrollView, Text, TouchableOpacity } from 'react-native';
 import { Colors } from './../../constants/styles';
 const {brand, darkLight, tertiary,primary} = Colors;
 
@@ -27,30 +27,56 @@ const Home = ()=>{
             <StatusBar style='light'/>
             <InnerContainer>
                 <HomeContainer>
-                    <PageTitle>Contacts Page</PageTitle>
-                    <MyContactView
-                        title={"PDMA"}
-                        call={"1129"}
-                        sms={"111"}
-                    />
+                    <PageTitle style={styles.title}>Contacts Page</PageTitle>
+                    <ScrollView style={styles.scroll}>
+                        <MyContactView
+                            title={"Emergency Rescue"}
+                            call={"1122"}
+                        />
+                        <MyContactView
+                            title={"NDMA - National Disaster Management Authority"}
+                            call={["051-9214295","051-9087812"]}
+                        />
+                        <MyContactView
+                            title={"MoHR Helpline - Women & Children Protection"}
+                            call={"1099"}
+                            sms={"1099"}
+                        />
+                        <MyContactView
+                            title={"Weather Early Warning - Pak Meteorological Dept"}
+                            call={"051-111-638-638"}
+                        />
+                        <MyContactView
+                            title={"Edhi Foundation - Ambulance"}
+                            call={"115"}
+                        />
+                        <MyContactView
+                            title={"Fire Brigade"}
+                            call={"16"}
+                        />
+                    </ScrollView>
                 </HomeContainer>
             </InnerContainer>
         </>
     );
 }
-const MyContactView = ({title, call, sms})=>{
+const MyContactView = ({title, call = [], sms})=>{
+    const callNumbers = Array.isArray(call) ? call : [call];
+
     return (
         <View style={styles.container}>
             <SubTitle style={styles.subtitle}>{title}</SubTitle>
-            <View style={styles.row}>
-            <Text style={styles.text}>{call}</Text>
-                <TouchableOpacity style={styles.icon} onPress={()=>{/*it will perform a call function*/ }}>
-                    <Ionicons name={"call"} size={30} color={brand}/>    
-                </TouchableOpacity>
-            </View>
-            {sms&&<View style={styles.row}>
+            {callNumbers.map((number, idx) => (
+                <View style={styles.row} key={idx}>
+                    <Text style={styles.text}>{number}</Text>
+                    <TouchableOpacity onPress={() => { alert(`Calling ${number}`) }}>
+                        <Ionicons name={"call"} size={30} color={brand}/>    
+                    </TouchableOpacity>
+                </View>
+            ))}
+            {sms&&<View style={styles.row} >
             <Text style={styles.text}>{sms}</Text>
-            <TouchableOpacity style={styles.icon} onPress={()=>{/*it will perform a call function*/ }}>
+            <TouchableOpacity style={styles.icon} onPress={()=>{alert(`Messaging ${sms}`)}}>
                 <Ionicons name={"chatbubble"} size={30} color={brand}/>    
             </TouchableOpacity>
             </View>}
@@ -66,15 +92,25 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding:15,
         marginTop:10,
+        marginBottom:10,
+    },
+    title:{
+        padding:10
     },
     row:{
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        // backgroundColor:primary,
+        borderRadius:7,
+        backgroundColor:primary,
+        padding:3,
+        marginBottom:8,
     },
     subtitle:{
-        marginBottom:0
+        marginBottom:10
+    },  
+    scroll:{
+        paddingHorizontal:8
     },  
     text:{
         fontSize:20,
