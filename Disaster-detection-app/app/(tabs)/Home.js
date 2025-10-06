@@ -39,6 +39,13 @@ const Home = ()=>{
                                     Log Out
                                 </ButtonText>
                             </StyledButton>
+                            <StyledButton onPress={() => router.push('/ViewPrecautions')}>
+                                <ButtonText>View Precautions</ButtonText>
+                            </StyledButton>
+
+                            <StyledButton onPress={() => router.push('/CreatePrecautions')}>
+                                <ButtonText>Create Precautions</ButtonText>
+                            </StyledButton>
                             
                         </StyledFormArea>
                 </HomeContainer>

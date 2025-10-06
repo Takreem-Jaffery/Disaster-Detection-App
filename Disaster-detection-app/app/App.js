@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Signup from './Signup';
 import Login from './Login';
+import ViewPrecautions from './ViewPrecautions';
+import CreatePrecautions from './CreatePrecautions';
 import Home from './(tabs)/Home'
 
 const Stack = createStackNavigator();
@@ -14,8 +16,12 @@ export default function App() {
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="ViewPrecautions" component={ViewPrecautions} />
+        <Stack.Screen name="CreatePrecautions" component={CreatePrecautions} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 // dont need this
+
+
