@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
+import * as Linking from 'expo-linking';
 import {Octicons,Ionicons} from '@expo/vector-icons';
 import {
     InnerContainer,
@@ -16,10 +17,38 @@ import {
     LeftIcon,
     RightIcon
 } from './../../constants/styles'
-import { View, StyleSheet, ActivityIndicator, Alert,ScrollView, Text, TouchableOpacity } from 'react-native';
+import { Platform, PermissionsAndroid, View, StyleSheet, ActivityIndicator, Alert,ScrollView, Text, TouchableOpacity } from 'react-native';
 import { Colors } from './../../constants/styles';
 const {brand, darkLight, tertiary,primary} = Colors;
 
+const requestCallPermission = async ()=>{ //only for android
+    try{
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CALL_PHONE
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err){
+        console.warn(err);
+        return false;
+    }
+}
+const makeCall = async (number)=>{
+    const url = `tel:${number}`;
+
+    //ask for permission
+    if (Platform.OS === "android"){
+        const allowed = await requestCallPermission();
+        if (!allowed){
+            Alert.alert("Permission denied","Couldn't make a call without permission.");
+            return;
+        }
+    }
+    Linking.openURL(url);
+}
+const sendSMS = (number)=>{
+    const url = `sms:${number}`;
+    Linking.openURL(url);
+}
 const Home = ()=>{
     const router = useRouter();
     return (
@@ -69,14 +98,14 @@ const MyContactView = ({title, call = [], sms})=>{
             {callNumbers.map((number, idx) => (
                 <View style={styles.row} key={idx}>
                     <Text style={styles.text}>{number}</Text>
-                    <TouchableOpacity onPress={() => { alert(`Calling ${number}`) }}>
+                    <TouchableOpacity onPress={() => { makeCall(number) }}>
                         <Ionicons name={"call"} size={30} color={brand}/>    
                     </TouchableOpacity>
                 </View>
             ))}
             {sms&&<View style={styles.row} >
             <Text style={styles.text}>{sms}</Text>
-            <TouchableOpacity style={styles.icon} onPress={()=>{alert(`Messaging ${sms}`)}}>
+            <TouchableOpacity style={styles.icon} onPress={()=>{ sendSMS(sms) }}>
                 <Ionicons name={"chatbubble"} size={30} color={brand}/>    
             </TouchableOpacity>
             </View>}
