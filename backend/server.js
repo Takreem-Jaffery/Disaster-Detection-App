@@ -4,7 +4,9 @@ const morgan = require('morgan');
 const connectDB = require('./config/db');
 const cors = require('cors');
 const helmet = require('helmet');
+const predictionCron = require('./cron/predictionCron.js');
 require('colors');
+
 
 const app = express();
 connectDB();
@@ -19,6 +21,7 @@ app.use(cors());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/precautions', require('./routes/precaution'));
 app.use('/api/safePlaces', require('./routes/safePlace'));
+app.use("/api/prediction", require('./routes/predictionRoutes.js'));
 
 // Global error handler
 app.use((err, req, res, next) => {
@@ -29,4 +32,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`.yellow.bold);
+    predictionCron.initializePredictionCron();
 });
