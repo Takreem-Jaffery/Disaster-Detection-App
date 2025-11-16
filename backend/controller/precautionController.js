@@ -36,4 +36,61 @@ exports.getPrecautions = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error fetching precautions", error: error.message });
   }
+
+//update a precaution
+exports.updatePrecaution = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { disasterType, severity, title, precautions, isActive } = req.body;
+
+    const precaution = await Precaution.findById(id);
+    
+    if (!precaution) {
+      return res.status(404).json({ message: "Precaution not found" });
+    }
+
+    //update fields
+    if (disasterType) precaution.disasterType = disasterType;
+    if (severity) precaution.severity = severity;
+    if (title) precaution.title = title;
+    if (precautions) precaution.precautions = precautions;
+    if (isActive !== undefined) precaution.isActive = isActive;
+
+    await precaution.save();
+
+    res.status(200).json({
+      message: "Precaution updated successfully",
+      precaution,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error updating precaution",
+      error: error.message,
+    });
+  }
+};
+
+//delete a precaution
+exports.deletePrecaution = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const precaution = await Precaution.findById(id);
+    
+    if (!precaution) {
+      return res.status(404).json({ message: "Precaution not found" });
+    }
+
+    await Precaution.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "Precaution deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error deleting precaution",
+      error: error.message,
+    });
+  }
+};
 };

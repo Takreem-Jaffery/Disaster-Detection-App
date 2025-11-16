@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Switch,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -17,121 +18,161 @@ import {
   ButtonText,
   StyledTextInput,
   SubTitle,
-} from './../../constants/styles'
+} from "./../../constants/styles";
+import {
+  createPrecaution,
+  getPrecautions,
+  updatePrecaution,
+  deletePrecaution,
+} from "./../../services/precautionService";
 
 export default function CreatePrecautions() {
-  const [precautions, setPrecautions] = useState([
-    {
-      id: 1,
-      disasterType: "Flood",
-      severity: "High",
-      title: "Flash Flood Warning",
-      precautionText: "Move to higher ground, avoid walking in water",
-      isActive: true,
-      createdAt: "2025-10-01",
-      updatedAt: "",
-    },
-    {
-      id: 2,
-      disasterType: "Rainfall",
-      severity: "Medium",
-      title: "Heavy Rain Alert",
-      precautionText: "Secure outdoor items, avoid unnecessary travel",
-      isActive: false,
-      createdAt: "2025-09-28",
-      updatedAt: "2025-09-29",
-    },
-  ]);
-
+  const [precautions, setPrecautions] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
-    disasterType: "Flood",
-    severity: "Medium",
+    disasterType: "flood",
+    severity: "medium",
     title: "",
     precautionText: "",
     isActive: true,
-    createdAt: "",
-    updatedAt: "",
   });
+
+  // Fetch precautions on component mount
+  useEffect(() => {
+    fetchPrecautions();
+  }, []);
+
+  const fetchPrecautions = async () => {
+    setLoading(true);
+    const result = await getPrecautions();
+    if (result.success) {
+      // Transform backend data to frontend format
+      const transformedData = result.data.map((item) => ({
+        id: item._id,
+        disasterType: item.disasterType,
+        severity: item.severity,
+        title: item.title,
+        precautionText: item.precautions,
+        isActive: item.isActive,
+        createdAt: new Date(item.createdAt).toISOString().split("T")[0],
+        updatedAt: item.updatedAt
+          ? new Date(item.updatedAt).toISOString().split("T")[0]
+          : "",
+        userId: item.userId,
+      }));
+      setPrecautions(transformedData);
+    } else {
+      Alert.alert("Error", result.message || "Failed to fetch precautions");
+    }
+    setLoading(false);
+  };
 
   const resetForm = () => {
     setFormData({
-      disasterType: "Flood",
-      severity: "Medium",
+      disasterType: "flood",
+      severity: "medium",
       title: "",
       precautionText: "",
       isActive: true,
-      createdAt: new Date().toISOString().split("T")[0],
-      updatedAt: "",
     });
     setEditingId(null);
     setShowForm(false);
   };
 
-  const savePrecaution = () => {
-    if (!formData.disasterType || !formData.severity || !formData.title || !formData.precautionText) {
+  const savePrecaution = async () => {
+    if (
+      !formData.disasterType ||
+      !formData.severity ||
+      !formData.title ||
+      !formData.precautionText
+    ) {
       Alert.alert("Validation Error", "All fields are required!");
       return;
     }
 
+    setLoading(true);
+
     if (editingId) {
       // Update existing
-      setPrecautions((prev) =>
-        prev.map((p) =>
-          p.id === editingId
-            ? {
-                ...formData,
-                id: editingId,
-                updatedAt: new Date().toISOString().split("T")[0],
-              }
-            : p
-        )
-      );
+      const result = await updatePrecaution(editingId, formData);
+      if (result.success) {
+        Alert.alert("Success", "Precaution updated successfully");
+        await fetchPrecautions(); // Refresh list
+        resetForm();
+      } else {
+        Alert.alert("Error", result.message || "Failed to update precaution");
+      }
     } else {
       // Add new
-      setPrecautions((prev) => [
-        ...prev,
-        {
-          ...formData,
-          id: Date.now(),
-          createdAt: new Date().toISOString().split("T")[0],
-        },
-      ]);
+      const result = await createPrecaution(formData);
+      if (result.success) {
+        Alert.alert("Success", "Precaution created successfully");
+        await fetchPrecautions(); // Refresh list
+        resetForm();
+      } else {
+        Alert.alert("Error", result.message || "Failed to create precaution");
+      }
     }
-    resetForm();
+
+    setLoading(false);
   };
 
   const editPrecaution = (item) => {
-    setFormData(item);
+    setFormData({
+      disasterType: item.disasterType,
+      severity: item.severity,
+      title: item.title,
+      precautionText: item.precautionText,
+      isActive: item.isActive,
+    });
     setEditingId(item.id);
     setShowForm(true);
   };
 
-  const deletePrecaution = (id) => {
-    Alert.alert("Confirm Deletion", "Are you sure you want to delete this precaution?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () =>
-          setPrecautions((prev) => prev.filter((p) => p.id !== id)),
-      },
-    ]);
+  const handleDeletePrecaution = (id) => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this precaution?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            setLoading(true);
+            const result = await deletePrecaution(id);
+            if (result.success) {
+              Alert.alert("Success", "Precaution deleted successfully");
+              await fetchPrecautions();
+            } else {
+              Alert.alert("Error", result.message || "Failed to delete precaution");
+            }
+            setLoading(false);
+          },
+        },
+      ]
+    );
   };
 
-  const toggleActive = (id) => {
-    setPrecautions((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? {
-              ...p,
-              isActive: !p.isActive,
-              updatedAt: new Date().toISOString().split("T")[0],
-            }
-          : p
-      )
-    );
+  const toggleActive = async (id) => {
+    const precaution = precautions.find((p) => p.id === id);
+    if (!precaution) return;
+
+    const updatedData = {
+      ...precaution,
+      isActive: !precaution.isActive,
+    };
+
+    setLoading(true);
+    const result = await updatePrecaution(id, updatedData);
+    if (result.success) {
+      await fetchPrecautions(); // Refresh list
+    } else {
+      Alert.alert("Error", result.message || "Failed to toggle status");
+    }
+    setLoading(false);
   };
 
   return (
@@ -142,13 +183,23 @@ export default function CreatePrecautions() {
           Create & Manage Precautions
         </SubTitle>
 
+        {loading && (
+          <ActivityIndicator
+            size="large"
+            color="#0000ff"
+            style={{ marginVertical: 20 }}
+          />
+        )}
+
         {!showForm ? (
-          <StyledButton onPress={() => setShowForm(true)}>
+          <StyledButton onPress={() => setShowForm(true)} disabled={loading}>
             <ButtonText>Add New Precaution</ButtonText>
           </StyledButton>
         ) : (
           <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontWeight: "bold", marginTop: 10 }}>Disaster Type</Text>
+            <Text style={{ fontWeight: "bold", marginTop: 10 }}>
+              Disaster Type
+            </Text>
             <View
               style={{
                 borderWidth: 1,
@@ -163,10 +214,10 @@ export default function CreatePrecautions() {
                   setFormData({ ...formData, disasterType: val })
                 }
               >
-                <Picker.Item label="Flood" value="Flood" />
-                <Picker.Item label="Rainfall" value="Rainfall" />
-                <Picker.Item label="Earthquake" value="Earthquake" />
-                <Picker.Item label="Heatwave" value="Heatwave" />
+                <Picker.Item label="Flood" value="flood" />
+                <Picker.Item label="Rainfall" value="rainfall" />
+                <Picker.Item label="Earthquake" value="earthquake" />
+                <Picker.Item label="Heatwave" value="heatwave" />
               </Picker>
             </View>
 
@@ -181,22 +232,28 @@ export default function CreatePrecautions() {
             >
               <Picker
                 selectedValue={formData.severity}
-                onValueChange={(val) => setFormData({ ...formData, severity: val })}
+                onValueChange={(val) =>
+                  setFormData({ ...formData, severity: val })
+                }
               >
-                <Picker.Item label="High" value="High" />
-                <Picker.Item label="Medium" value="Medium" />
-                <Picker.Item label="Low" value="Low" />
+                <Picker.Item label="High" value="high" />
+                <Picker.Item label="Medium" value="medium" />
+                <Picker.Item label="Low" value="low" />
               </Picker>
             </View>
 
             <Text style={{ fontWeight: "bold", marginTop: 10 }}>Title</Text>
             <StyledTextInput
               value={formData.title}
-              onChangeText={(text) => setFormData({ ...formData, title: text })}
+              onChangeText={(text) =>
+                setFormData({ ...formData, title: text })
+              }
               placeholder="Enter Title"
             />
 
-            <Text style={{ fontWeight: "bold", marginTop: 10 }}>Precautions</Text>
+            <Text style={{ fontWeight: "bold", marginTop: 10 }}>
+              Precautions
+            </Text>
             <StyledTextInput
               value={formData.precautionText}
               onChangeText={(text) =>
@@ -204,25 +261,32 @@ export default function CreatePrecautions() {
               }
               placeholder="Enter Safety Measures"
               multiline
-              style={{
-                height: 120,
-                textAlignVertical: "top",
-              }}
+              style={{ height: 120, textAlignVertical: "top" }}
             />
 
-            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 10,
+              }}
+            >
               <Text>Status (Active): </Text>
               <Switch
                 value={formData.isActive}
-                onValueChange={(val) => setFormData({ ...formData, isActive: val })}
+                onValueChange={(val) =>
+                  setFormData({ ...formData, isActive: val })
+                }
               />
             </View>
 
-            <StyledButton onPress={savePrecaution}>
-              <ButtonText>{editingId ? "Update Precaution" : "Save Precaution"}</ButtonText>
+            <StyledButton onPress={savePrecaution} disabled={loading}>
+              <ButtonText>
+                {editingId ? "Update Precaution" : "Save Precaution"}
+              </ButtonText>
             </StyledButton>
 
-            <StyledButton onPress={resetForm}>
+            <StyledButton onPress={resetForm} disabled={loading}>
               <ButtonText>Cancel</ButtonText>
             </StyledButton>
           </View>
@@ -231,12 +295,13 @@ export default function CreatePrecautions() {
         <Text style={{ fontWeight: "bold", fontSize: 20, marginVertical: 10 }}>
           Existing Precautions
         </Text>
+
         <FlatList
-        data={precautions}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+          data={precautions}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
             <View
-            style={{
+              style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -246,38 +311,58 @@ export default function CreatePrecautions() {
                 backgroundColor: "#fafafa",
                 borderRadius: 8,
                 marginBottom: 8,
-            }}
+              }}
             >
-            <View style={{ flex: 1 }}>
-                <Text style={{ fontWeight: "bold", fontSize: 16 }}>{item.title}</Text>
-                <Text>{item.disasterType} | Severity: {item.severity}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+                  {item.title}
+                </Text>
+                <Text style={{ textTransform: "capitalize" }}>
+                  {item.disasterType} | Severity: {item.severity}
+                </Text>
                 <Text style={{ fontSize: 12, color: "gray" }}>
-                Created: {item.createdAt}{" "}
-                {item.updatedAt ? `| Updated: ${item.updatedAt}` : ""}
+                  Created: {item.createdAt}{" "}
+                  {item.updatedAt ? `| Updated: ${item.updatedAt}` : ""}
                 </Text>
-
-                {/* 🔹 Status Text */}
-                <Text style={{ fontSize: 13, marginTop: 4, fontWeight: "600", color: item.isActive ? "green" : "red" }}>
-                {item.isActive ? "Active" : "Inactive"}
+                <Text
+                  style={{
+                    fontSize: 13,
+                    marginTop: 4,
+                    fontWeight: "600",
+                    color: item.isActive ? "green" : "red",
+                  }}
+                >
+                  {item.isActive ? "Active" : "Inactive"}
                 </Text>
-            </View>
+              </View>
 
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <TouchableOpacity onPress={() => editPrecaution(item)} style={{ marginRight: 12 }}>
-                <Icon name="edit" size={22} color="blue" />
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <TouchableOpacity
+                  onPress={() => editPrecaution(item)}
+                  style={{ marginRight: 12 }}
+                  disabled={loading}
+                >
+                  <Icon name="edit" size={22} color="blue" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => deletePrecaution(item.id)} style={{ marginRight: 12 }}>
-                <Icon name="delete" size={22} color="red" />
+
+                <TouchableOpacity
+                  onPress={() => handleDeletePrecaution(item.id)}
+                  style={{ marginRight: 12 }}
+                  disabled={loading}
+                >
+                  <Icon name="delete" size={22} color="red" />
                 </TouchableOpacity>
+
                 <Switch
-                value={item.isActive}
-                onValueChange={() => toggleActive(item.id)}
-                trackColor={{ false: "#ccc", true: "#4caf50" }}
-                thumbColor={item.isActive ? "#fff" : "#f4f3f4"}
+                  value={item.isActive}
+                  onValueChange={() => toggleActive(item.id)}
+                  trackColor={{ false: "#ccc", true: "#4caf50" }}
+                  thumbColor={item.isActive ? "#fff" : "#f4f3f4"}
+                  disabled={loading}
                 />
+              </View>
             </View>
-            </View>
-        )}
+          )}
         />
       </ScrollView>
     </StyledContainer>
