@@ -3,10 +3,12 @@ import { Platform } from 'react-native';
 
 // Pick base URL depending on platform/environment
 const BASE_URL = (() => {
-  // Android emulator (AVD)
-  if (Platform.OS === 'android') return 'http://10.0.2.2:5000/api';
-  // iOS simulator (or expo web)
-  return 'http://localhost:5000/api';
+  // Android phone - use your laptop's IP
+  if (Platform.OS === 'android') return 'http://192.168.18.96:5000/api';
+  // iOS simulator - use your laptop's IP
+  if (Platform.OS === 'ios') return 'http://192.168.18.96:5000/api';
+  // Web
+  return 'http://192.168.18.96:5000/api';
 })();
 
 const API = axios.create({
