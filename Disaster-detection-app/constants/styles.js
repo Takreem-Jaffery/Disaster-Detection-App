@@ -184,3 +184,30 @@ export const RadioInner = styled.View`
   border-radius: 6px;
   background-color: #6c63ff;
 `;
+
+//for safe locations
+export const LocationCard = styled.TouchableOpacity`
+  width: 100%;
+  padding: 15px;
+  background-color: ${tertiary};
+  border-radius: 10px;
+  margin-vertical: 8px;
+`;
+
+export const LocationTitle = styled.Text`
+  font-size: 18px;
+  font-weight: bold;
+  color: ${secondary};
+`;
+
+export const LocationDistance = styled.Text`
+  margin-top: 5px;
+  font-size: 14px;
+  color: ${darkLight};
+`;
+
+export const LocationNumber = styled.Text`
+  margin-top: 5px;
+  font-size: 14px;
+  color: ${brand};
+`;

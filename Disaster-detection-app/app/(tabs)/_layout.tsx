@@ -45,6 +45,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="AddSafeZone"
+        options={{
+          title: 'Add Safe Zone',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="mappin.and.ellipse" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="Guidance"
         options={{
           title: 'Guidance',
