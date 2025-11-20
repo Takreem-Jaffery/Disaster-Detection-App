@@ -1,121 +1,4 @@
-// import React, {useState, useEffect} from 'react';
-// import { StatusBar } from 'expo-status-bar';
-// import { useRouter } from 'expo-router';
-// import {
-//     InnerContainer,
-//     PageTitle,
-//     SubTitle,
-//     StyledFormArea,
-//     ButtonText,
-//     StyledButton,
-//     Line,
-//     HomeContainer,
-//     HomeImage,
-//     Avatar
-// } from './../../constants/styles'
-// import { View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-// //uncomment for mobile
-// // import MapView, { Marker } from 'react-native-maps';
-// import * as Location from 'expo-location';
-
-// const Home = ()=>{
-//     const [location, setLocation] = useState(null);
-//     const [loading, setLoading] = useState(true);
-//     const router = useRouter();
-
-
-//      useEffect(() => {
-//         (async () => {
-//         // Ask for permission
-//         let { status } = await Location.requestForegroundPermissionsAsync();
-//         if (status !== 'granted') {
-//             Alert.alert('Permission Denied', 'Allow location access to view your position on the map.');
-//             setLoading(false);
-//             return;
-//         }
-
-//         // Get current location
-//         let currentLocation = await Location.getCurrentPositionAsync({});
-//         setLocation(currentLocation.coords);
-//         setLoading(false);
-//         })();
-//     }, []);
-
-//      if (loading) {
-//         return (
-//         <View style={styles.centered}>
-//             <ActivityIndicator size="large" color="#007AFF" />
-//         </View>
-//         );
-//     }
-
-//     if (!location) {
-//         return (
-//         <View style={styles.centered}>
-//             <Text>Location not available.</Text>
-//         </View>
-//         );
-//     }
-//     return (
-//         <>
-//         {/* TEMPORARILY COMMENTING, IT DOESNT WORK FOR WEB */}
-//         {/* <View style={styles.container}>
-//             <MapView
-//                 style={StyleSheet.absoluteFillObject}
-//                 showsUserLocation={true}
-//                 region={{
-//                 latitude: location.latitude,
-//                 longitude: location.longitude,
-//                 latitudeDelta: 0.01,
-//                 longitudeDelta: 0.01,
-//                 }}
-//             >
-//                 <Marker
-//                 coordinate={{
-//                     latitude: location.latitude,
-//                     longitude: location.longitude,
-//                 }}
-//                 title="You are here"
-//                 pinColor="blue"
-//                 />
-//             </MapView>
-//         </View> */}
-//             <StatusBar style='light'/>
-//             <InnerContainer>
-//                 <HomeImage source={require('./../../assets/images/img2.webp')} resizeMode="cover" />
-//                 <HomeContainer>
-//                     <PageTitle home={true}>Welcome!</PageTitle>
-//                     <SubTitle home={true}>Home Page</SubTitle>
-                
-//                         <StyledFormArea>
-//                             <Avatar source={require('./../../assets/images/app-logo.png')} resizeMode="cover"/>
-//                             <Line/>
-//                             <StyledButton onPress={()=>{router.replace("/Login")}}>
-//                                 <ButtonText>
-//                                     Log Out
-//                                 </ButtonText>
-//                             </StyledButton>
-                            
-//                         </StyledFormArea>
-//                 </HomeContainer>
-//             </InnerContainer>
-//         </>
-//     );
-// }
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-//   centered: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-// });
-
-// export default Home;
-
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import {
@@ -129,14 +12,13 @@ import {
     HomeContainer,
     HomeImage,
     Avatar
-} from './../../constants/styles';
+} from "./../../../constants/styles"
 import { View, StyleSheet, ActivityIndicator, Alert, Text, ScrollView, Dimensions } from 'react-native';
 // Uncomment for mobile
 // import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
-import API from '../../src/api/api';
-
-const { width, height } = Dimensions.get('window');
+import API from "./../../../src/api/api"
+import { AuthContext } from './../../../src/context/authContext';
 
 const Home = () => {
     const [location, setLocation] = useState(null);
@@ -146,7 +28,13 @@ const Home = () => {
     const [currentRisk, setCurrentRisk] = useState(null);
     const [dataLoading, setDataLoading] = useState(false);
     const router = useRouter();
-
+    const {user} = useContext(AuthContext);
+    useEffect(() => {
+        if (!user || user.role !== 'rescue-authority') {
+            router.replace('/user/Home'); // redirect unauthorized user
+        }
+    }, [user]);
+    
     useEffect(() => {
         (async () => {
             // Ask for permission
@@ -406,7 +294,7 @@ const Home = () => {
 
                 {/* Logout Section */}
                 <View style={styles.footerContainer}>
-                    <Avatar source={require('./../../assets/images/app-logo.png')} resizeMode="cover"/>
+                    <Avatar source={require('./../../../assets/images/app-logo.png')} resizeMode="cover"/>
                     <Line/>
                     <StyledButton onPress={()=>{router.replace("/Login")}}>
                         <ButtonText>
@@ -428,7 +316,7 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
     },
     header: {
-        backgroundColor: '#007AFF',
+        backgroundColor: '#bedeffff',
         paddingTop: 60,
         paddingBottom: 20,
         paddingHorizontal: 20,

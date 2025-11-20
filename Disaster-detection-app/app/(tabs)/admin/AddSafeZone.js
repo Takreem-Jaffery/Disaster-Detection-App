@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import {Linking, View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import * as Location from 'expo-location';
-import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import API from "./../../../src/api/api"
 import {
   StyledContainer,
+  StyledTextInputSafe,
   PageTitle,
-} from './../../constants/styles'; 
+} from "./../../../constants/styles" 
 
 export default function AddSafeLocationScreen({ navigation }) {
     const [form, setForm] = useState({
@@ -46,14 +48,14 @@ export default function AddSafeLocationScreen({ navigation }) {
 
 
     const handleSubmit = async () => {
-        const token = "YOUR_JWT_TOKEN"; // Replace with stored token (AsyncStorage etc.)
-
+        
         if (!form.name || !form.lat || !form.lng) {
             return Alert.alert("Missing fields", "Name, lat, and lng are required.");
         }
 
         try {
-            const res = await axios.post("/api/safePlace/create",
+            const token = await AsyncStorage.getItem("token"); 
+            const res = await API.post("/safePlaces/create",
                 {
                     name: form.name,
                     description: form.description,
@@ -67,9 +69,22 @@ export default function AddSafeLocationScreen({ navigation }) {
                     headers: { Authorization: `Bearer ${token}` }
                 }
             );
-
-            Alert.alert("Success", "Safe location added!");
-            navigation.goBack();
+            setForm({
+                name: "",
+                description: "",
+                address: "",
+                contact: "",
+                capacity: "",
+                lat: "",
+                lng: ""
+            });
+            Alert.alert("Success", "Safe location added!",
+                [
+                    { text:"OK",
+                        onPress:()=>navigation.goBack()
+                    }
+                ]
+            );
 
         } catch (err) {
             Alert.alert("Error", err.response?.data?.message || err.message);
@@ -90,35 +105,36 @@ export default function AddSafeLocationScreen({ navigation }) {
             <PageTitle>Add Safe Zone</PageTitle>
             <ScrollView style={{ padding: 20 }}>
 
-                <TextInput
+                <StyledTextInputSafe
                     placeholder="Name"
+                    placeholderTextColor="#484848ff"
                     value={form.name}
                     onChangeText={(t) => handleChange("name", t)}
                     style={styles.input}
                 />
 
-                <TextInput
+                <StyledTextInputSafe
                     placeholder="Description"
                     value={form.description}
                     onChangeText={(t) => handleChange("description", t)}
                     style={styles.input}
                 />
 
-                <TextInput
+                <StyledTextInputSafe
                     placeholder="Address"
                     value={form.address}
                     onChangeText={(t) => handleChange("address", t)}
                     style={styles.input}
                 />
 
-                <TextInput
+                <StyledTextInputSafe
                     placeholder="Contact Number"
                     value={form.contact}
                     onChangeText={(t) => handleChange("contact", t)}
                     style={styles.input}
                 />
 
-                <TextInput
+                <StyledTextInputSafe
                     placeholder="Capacity"
                     keyboardType="numeric"
                     value={form.capacity}
@@ -126,15 +142,15 @@ export default function AddSafeLocationScreen({ navigation }) {
                     style={styles.input}
                 />
 
-                <View style={{ flexDirection: "row", gap: 10 }}>
-                    <TextInput
+                <View style={{ flexDirection: "row", gap: 10, width:"100%" ,justifyContent:"space-evenly" }}>
+                    <StyledTextInputSafe
                     placeholder="Latitude"
                     keyboardType="numeric"
                     value={form.lat}
                     onChangeText={(t) => handleChange("lat", t)}
                     style={[styles.input, { flex: 1 }]}
                     />
-                    <TextInput
+                    <StyledTextInputSafe
                     placeholder="Longitude"
                     keyboardType="numeric"
                     value={form.lng}
@@ -163,7 +179,6 @@ const styles = {
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    color:"#333",
     padding: 12,
     marginBottom: 12,
     borderRadius: 8,

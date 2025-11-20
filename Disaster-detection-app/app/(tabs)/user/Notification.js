@@ -12,7 +12,7 @@ import {
     HomeContainer,
     HomeImage,
     Avatar
-} from './../../constants/styles'
+} from "./../../../constants/styles"
 import { View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 //uncomment for mobile
 // import MapView, { Marker } from 'react-native-maps';
@@ -60,13 +60,13 @@ const Home = ()=>{
         <>
             <StatusBar style='light'/>
             <InnerContainer>
-                <HomeImage source={require('./../../assets/images/img2.webp')} resizeMode="cover" />
+                <HomeImage source={require('./../../../assets/images/img2.webp')} resizeMode="cover" />
                 <HomeContainer>
                     <PageTitle home={true}>Welcome!</PageTitle>
                     <SubTitle home={true}>Notification Page</SubTitle>
                 
                         <StyledFormArea>
-                            <Avatar source={require('./../../assets/images/app-logo.png')} resizeMode="cover"/>
+                            <Avatar source={require('./../../../assets/images/app-logo.png')} resizeMode="cover"/>
                             <Line/>
                             <StyledButton onPress={()=>{router.replace("/Login")}}>
                                 <ButtonText>

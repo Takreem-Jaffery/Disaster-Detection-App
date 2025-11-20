@@ -58,7 +58,7 @@ export const SubTitle = styled.Text`
 export const StyledFormArea = styled.View`
     width:320px;
 `
-export const StyledTextInput = styled.TextInput`
+export const StyledTextInput = styled.TextInput.attrs({placeholderTextColor:"#656565ff"})`
     background-color: ${tertiary};
     padding: 15px;
     padding-left: 55px;
@@ -211,3 +211,16 @@ export const LocationNumber = styled.Text`
   font-size: 14px;
   color: ${brand};
 `;
+
+export const StyledTextInputSafe = styled.TextInput.attrs({placeholderTextColor:"#656565ff"})`
+    background-color: ${tertiary};
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    height: 60px;
+    width: 320px;
+    margin-vertical: 3px;
+    margin-bottom: 10px;
+    align-self:center;
+    color: ${secondary};
+`

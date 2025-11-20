@@ -14,6 +14,8 @@ export const AuthProvider = ({ children }) => {
         const token = await getStoredToken();
         if (token) {
           setAuthToken(token);
+          const res = await API.get('/auth/me')
+          setUser(res.data.user);
         }
       } catch (err) {
         console.log('Auto-login failed:', err?.response?.data || err.message);

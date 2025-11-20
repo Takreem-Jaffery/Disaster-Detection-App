@@ -3,7 +3,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Replace with your actual backend URL
-const API_URL = 'http://10.0.2.2:5000/api/precautions';
+const API_URL = 'http://192.168.100.10:3000/api/precautions';
 
 // Get auth token from AsyncStorage
 const getAuthToken = async () => {
@@ -20,6 +20,7 @@ const getAuthToken = async () => {
 export const createPrecaution = async (precautionData) => {
   try {
     const token = await getAuthToken();
+    console.log('Token before request:', token);
     const response = await axios.post(
       `${API_URL}/add`,
       {
@@ -32,7 +33,7 @@ export const createPrecaution = async (precautionData) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          'x-auth-token': token, // Adjust header name based on your auth middleware
+          'Authorization': `Bearer ${token}`,
         },
       }
     );

@@ -16,9 +16,9 @@ import {
     Avatar,
     LeftIcon,
     RightIcon
-} from './../../constants/styles'
+} from "./../../../constants/styles"
 import { Platform, PermissionsAndroid, View, StyleSheet, ActivityIndicator, Alert,ScrollView, Text, TouchableOpacity } from 'react-native';
-import { Colors } from './../../constants/styles';
+import { Colors } from '../../../constants/styles';
 const {brand, darkLight, tertiary,primary} = Colors;
 
 const requestCallPermission = async ()=>{ //only for android

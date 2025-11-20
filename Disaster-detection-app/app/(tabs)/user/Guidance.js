@@ -1,57 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   ScrollView,
   StyleSheet,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import {
-  StyledContainer,
-  PageTitle,
-  SubTitle,
-} from './../../constants/styles'
+import { StyledContainer, PageTitle, SubTitle } from './../../../constants/styles';
+import { getPrecautions } from "./../../../services/precautionService";
 
 export default function UserPrecautions() {
-  const [precautions] = useState([
-    {
-      id: 1,
-      disasterType: "Flood",
-      severity: "High",
-      title: "Flash Flood Warning",
-      precautionText: "Move to higher ground, avoid walking in water.",
-      isActive: true,
-      createdAt: "2025-10-01",
-      updatedAt: "",
-    },
-    {
-      id: 2,
-      disasterType: "Rainfall",
-      severity: "Medium",
-      title: "Heavy Rain Alert",
-      precautionText: "Secure outdoor items, avoid unnecessary travel.",
-      isActive: false,
-      createdAt: "2025-09-28",
-      updatedAt: "2025-09-29",
-    },
-    {
-      id: 3,
-      disasterType: "Earthquake",
-      severity: "Low",
-      title: "Minor Tremors Advisory",
-      precautionText: "Stay calm, move away from glass objects.",
-      isActive: true,
-      createdAt: "2025-10-03",
-      updatedAt: "",
-    },
-  ]);
+  const [precautions, setPrecautions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Filters
   const [selectedSeverity, setSelectedSeverity] = useState("All");
   const [selectedType, setSelectedType] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
+
+  // Fetch precautions from backend on mount
+  useEffect(() => {
+    fetchPrecautions();
+  }, []);
+
+  const fetchPrecautions = async () => {
+    setLoading(true);
+    try {
+      const result = await getPrecautions(); // Call your backend service
+      if (result.success) {
+        const transformedData = result.data.map((item) => ({
+          id: item._id,
+          disasterType: item.disasterType,
+          severity: item.severity,
+          title: item.title,
+          precautionText: item.precautions,
+          isActive: item.isActive,
+          createdAt: new Date(item.createdAt).toISOString().split("T")[0],
+          updatedAt: item.updatedAt
+            ? new Date(item.updatedAt).toISOString().split("T")[0]
+            : "",
+        }));
+        setPrecautions(transformedData);
+      } else {
+        Alert.alert("Error", result.message || "Failed to fetch precautions");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Something went wrong while fetching precautions.");
+    }
+    setLoading(false);
+  };
 
   // Filter + Sort
   const filteredPrecautions = precautions
@@ -72,9 +74,9 @@ export default function UserPrecautions() {
 
   // Severity mapping
   const severityStyles = {
-    High: { color: "red", icon: "error" },
-    Medium: { color: "orange", icon: "warning" },
-    Low: { color: "green", icon: "check-circle" },
+    high: { color: "red", icon: "error" },
+    medium: { color: "orange", icon: "warning" },
+    low: { color: "green", icon: "check-circle" },
   };
 
   return (
@@ -271,97 +273,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-// import React, {useState, useEffect} from 'react';
-// import { StatusBar } from 'expo-status-bar';
-// import { useRouter } from 'expo-router';
-// import {
-//     InnerContainer,
-//     PageTitle,
-//     SubTitle,
-//     StyledFormArea,
-//     ButtonText,
-//     StyledButton,
-//     Line,
-//     HomeContainer,
-//     HomeImage,
-//     Avatar
-// } from './../../constants/styles'
-// import { View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-// //uncomment for mobile
-// // import MapView, { Marker } from 'react-native-maps';
-// import * as Location from 'expo-location';
-
-// const Home = ()=>{
-//     const [location, setLocation] = useState(null);
-//     const [loading, setLoading] = useState(true);
-//     const router = useRouter();
-
-
-//      useEffect(() => {
-//         (async () => {
-//         // Ask for permission
-//         let { status } = await Location.requestForegroundPermissionsAsync();
-//         if (status !== 'granted') {
-//             Alert.alert('Permission Denied', 'Allow location access to view your position on the map.');
-//             setLoading(false);
-//             return;
-//         }
-
-//         // Get current location
-//         let currentLocation = await Location.getCurrentPositionAsync({});
-//         setLocation(currentLocation.coords);
-//         setLoading(false);
-//         })();
-//     }, []);
-
-//      if (loading) {
-//         return (
-//         <View style={styles.centered}>
-//             <ActivityIndicator size="large" color="#007AFF" />
-//         </View>
-//         );
-//     }
-
-//     if (!location) {
-//         return (
-//         <View style={styles.centered}>
-//             <Text>Location not available.</Text>
-//         </View>
-//         );
-//     }
-//     return (
-//         <>
-//             <StatusBar style='light'/>
-//             <InnerContainer>
-//                 <HomeImage source={require('./../../assets/images/img2.webp')} resizeMode="cover" />
-//                 <HomeContainer>
-//                     <PageTitle home={true}>Welcome!</PageTitle>
-//                     <SubTitle home={true}>Guidance Page</SubTitle>
-                
-//                         <StyledFormArea>
-//                             <Avatar source={require('./../../assets/images/app-logo.png')} resizeMode="cover"/>
-//                             <Line/>
-//                             <StyledButton onPress={()=>{router.replace("/Login")}}>
-//                                 <ButtonText>
-//                                     Log Out
-//                                 </ButtonText>
-//                             </StyledButton>
-                            
-//                         </StyledFormArea>
-//                 </HomeContainer>
-//             </InnerContainer>
-//         </>
-//     );
-// }
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-//   centered: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-// });
-
-// export default Home;

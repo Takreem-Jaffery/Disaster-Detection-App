@@ -1,70 +1,32 @@
+import React, { useContext } from 'react';
+import RootLayout from './../_layout'
+import UserTabLayout from './user/_layout';
+import AdminTabLayout from './admin/_layout';
+import { AuthContext } from './../../src/context/authContext'
+import { ActivityIndicator, View } from 'react-native';
 import { Tabs } from 'expo-router';
-import React from 'react';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+export default function TabsLayout() {
+  const { user, initializing } = useContext(AuthContext);
+  console.log("TabsLayout user role:", user?.role);
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  if (initializing) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+  
+  if (!user) {
+    //User not logged in
+    return <RootLayout />;
+  } 
+  
+  if (user?.role === 'rescue-authority') {
+    return <AdminTabLayout />;
+  }
 
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="Home"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="map.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="Contacts"
-        options={{
-          title: 'Contacts',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="phone.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="Notifications"
-        options={{
-          title: 'Notifications',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="bell.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="SafeZone"
-        options={{
-          title: 'Safe Zone',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="mappin.and.ellipse" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="AddSafeZone"
-        options={{
-          title: 'Add Safe Zone',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="mappin.and.ellipse" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="Guidance"
-        options={{
-          title: 'Guidance',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="info.circle.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="CreatePrecautions"
-        options={{
-          title: 'Create Precautions',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="info.circle.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+  // default to regular user
+  return <UserTabLayout />;
 }

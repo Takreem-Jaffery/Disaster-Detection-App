@@ -29,5 +29,6 @@ router.post('/login',
     login
 );
 
+router.get('/me', auth, getMe);
 
 module.exports = router;

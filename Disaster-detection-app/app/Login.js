@@ -8,7 +8,8 @@ import {Octicons,Ionicons} from '@expo/vector-icons';
 import {Colors} from '../constants/styles'
 import { useContext } from 'react';
 import { AuthContext } from '../src/context/authContext'; // exact match
-
+import API from "./../src/api/api"
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
     StyledContainer,
@@ -54,26 +55,31 @@ const Login = ()=>{
 
                     <Formik
                         initialValues={{email:'',password:''}}
-                        onSubmit={async (values, {setSubmitting})=>{
-                           setMsg('');
+                        // onSubmit={({ email, password },{setSubmitting}) => handleLogin(email, password,setSubmitting)}
+                        onSubmit={async ({email,password}, {setSubmitting})=>{
+                        setMsg('');
+                        try {
                             setSubmitting(true);
-                            try {
-                            // call login from AuthContext (this will save token and set user)
-                            await login({ email: values.email, password: values.password });
-                            // navigate to home on success
-                            router.push('/(tabs)/Home');
-                            } catch (err) {
-                            // handle error from backend / network
-                            const serverMsg =
-                                err?.response?.data?.message ||
-                                (err?.response?.data?.errors ? err.response.data.errors.map(e => e.msg).join(', ') : null) ||
-                                err.message;
-                            setMsg(serverMsg || 'Login failed. Please try again.');
-                            // optional: show alert as well
-                            // Alert.alert('Login error', serverMsg || 'Login failed');
-                            } finally {
-                            setSubmitting(false);
+
+                            const response = await API.post('/auth/login', { email, password });
+
+                            const data = response.data;
+
+                            // Save token and role
+                            await AsyncStorage.setItem('token', data.token);
+                            await AsyncStorage.setItem('userRole', data.user.role);
+
+                            // Navigate based on role
+                            if (data.user.role === 'rescue-authority') {
+                                router.push('/admin/Home');
+                            } else {
+                                router.push('/user/Home');
                             }
+                        } catch (error) {
+                            setMsg(error.message);
+                        } finally {
+                            setSubmitting(false);
+                        }
                         }}
                     >
                         {({handleChange, handleBlur, handleSubmit, values, isSubmitting})=>(<StyledFormArea>

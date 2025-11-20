@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, Linking, Alert, Text } from "react-native";
 import * as Location from "expo-location";
-import API from '../../src/api/api';
+import API from '../../../src/api/api';
 
 import {
   StyledContainer,
@@ -10,7 +10,7 @@ import {
   LocationTitle,
   LocationDistance,
   LocationNumber,
-} from './../../constants/styles'; 
+} from "./../../../constants/styles" 
 
 // Example data
 const SAFE_LOCATIONS = [
@@ -48,6 +48,7 @@ const SAFE_LOCATIONS = [
 
 export default function SafeLocationsScreen() {
     const [userLocation, setUserLocation] = useState(null);
+    const [safePlaces, setSafePlaces] = useState([]);
     const [sortedLocations, setSortedLocations] = useState([]);
     
     // request GPS permissions
@@ -73,7 +74,7 @@ export default function SafeLocationsScreen() {
                 const { latitude, longitude } = userLocation;
 
                 const res = await API.get(
-                `/safePlace/listSafePlace?lat=${latitude}&lng=${longitude}&radius=6000`
+                `/safePlaces/listSafePlace?lat=${latitude}&lng=${longitude}&radius=6000`
                 );
 
                 setSafePlaces(res.data);
@@ -84,6 +85,34 @@ export default function SafeLocationsScreen() {
 
         fetchPlaces();
     }, [userLocation]);
+
+    //sort locations by distance
+    useEffect(() => {
+        if (!userLocation || safePlaces.length === 0) return;
+
+        const { latitude, longitude } = userLocation;
+
+        const sorted = safePlaces.map(place => {
+            const lat = extractLat(place);
+            const lng = extractLng(place);
+
+            const distance = getDistance(latitude, longitude, lat, lng);
+
+            return {
+                id: place._id,
+                name: place.name,
+                lat,
+                lon: lng,
+                number: place.contact,
+                description: place.description,
+                address: place.address,
+                capacity: place.capacity,
+                distance
+            };
+        }).sort((a, b) => a.distance - b.distance);
+
+        setSortedLocations(sorted);
+    }, [userLocation, safePlaces]);
 
     //open maps
     const openInMaps = (lat, lng) => {
@@ -114,7 +143,7 @@ export default function SafeLocationsScreen() {
             <PageTitle>Safe Locations Nearby</PageTitle>
 
             <ScrollView style={{ width: "100%", marginTop: 10 }}>
-                {SAFE_LOCATIONS.map((loc) => (
+                {sortedLocations.map((loc) => (
                     <LocationCard key={loc.id} onPress={() => openInMaps(loc.lat, loc.lon)}>
                         <LocationTitle>{loc.name}</LocationTitle>
                         <LocationDistance>{loc.distance ? loc.distance.toFixed(2) : "N/A"} km away</LocationDistance>
