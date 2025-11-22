@@ -25,6 +25,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/precautions', require('./routes/precaution'));
 app.use('/api/safePlaces', require('./routes/safePlace'));
 app.use("/api/prediction", require('./routes/predictionRoutes.js'));
+app.use('/api/contacts', require('./routes/contactRoutes.js'));
 
 // Global error handler
 app.use((err, req, res, next) => {

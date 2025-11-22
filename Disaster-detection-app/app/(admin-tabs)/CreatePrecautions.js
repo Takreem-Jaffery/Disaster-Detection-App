@@ -320,7 +320,7 @@ export default function CreatePrecautions() {
   );
 
   return (
-    <StyledContainer>
+    <StyledContainer style={styles.background}>
       <FlatList
         data={precautions}
         keyExtractor={(item) => item.id.toString()}
@@ -336,6 +336,9 @@ export default function CreatePrecautions() {
 }
 
 const styles = {
+  background:{
+    backgroundColor:"#fff"
+  },
   label: { fontWeight: "bold", marginTop: 12, marginBottom: 6 },
   dropdown: {
     flexDirection: "row",

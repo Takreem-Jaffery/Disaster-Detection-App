@@ -3,14 +3,14 @@ import {useNavigation} from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {Formik} from 'formik'
-import {View, Text, Alert} from 'react-native'
+import {View, Text, Alert, StyleSheet} from 'react-native'
 import {Octicons,Ionicons} from '@expo/vector-icons';
 import {Colors} from '../constants/styles'
 import { useContext } from 'react';
 import { AuthContext } from '../src/context/authContext'; // exact match
 import API from "./../src/api/api"
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+ import { LinearGradient } from 'expo-linear-gradient';
 import {
     StyledContainer,
     InnerContainer,
@@ -45,7 +45,12 @@ const Login = ()=>{
      const { login } = useContext(AuthContext);
 
     return (
-        <StyledContainer>
+        <LinearGradient
+            colors={['#f8f7fc', '#ebe8f5', '#ddd8ee']}
+            style={styles.linearGradient}
+        >
+        <StyledContainer style={styles.background}>
+            
             <StatusBar style='dark'/>
             <InnerContainer>
                 <PageLogo source={require('../assets/images/app-logo.png')}
@@ -53,6 +58,7 @@ const Login = ()=>{
                     <PageTitle>Disaster Detection App</PageTitle>
                     <SubTitle>Account Login</SubTitle>
 
+                    <View style={styles.view}>
                     <Formik
                         initialValues={{email:'',password:''}}
                         // onSubmit={({ email, password },{setSubmitting}) => handleLogin(email, password,setSubmitting)}
@@ -123,8 +129,10 @@ const Login = ()=>{
                                 </ExtraView>
                             </StyledFormArea>)}
                     </Formik>
+                </View>
             </InnerContainer>
         </StyledContainer>
+        </LinearGradient>
     );
 }
 const MyTextInput=({label,icon,isPassword,hidePassword,setHidePassword,...props})=>{
@@ -143,4 +151,34 @@ const MyTextInput=({label,icon,isPassword,hidePassword,setHidePassword,...props}
         </View>
     )
 }
+const styles = StyleSheet.create({
+    view:{
+        display:"flex",
+        flex:0,
+        minWidth:"auto",
+        minHeight:"auto",
+        borderWidth: 1,
+        borderRadius: 12,
+        borderColor: "#ddd",
+        justifyContent:"center",
+        backgroundColor: '#ffffffff',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        paddingHorizontal:12,
+        paddingVertical:30,
+
+    },
+    background:{
+        backgroundColor:"none"
+    },  
+    linearGradient: {
+        flex:1,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});
 export default Login;

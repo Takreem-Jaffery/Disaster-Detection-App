@@ -9,16 +9,16 @@ export const Colors = {
     secondary: "#000",
     tertiary: "#e1eaf9ff",
     darkLight: "#26354fff",
-    brand: "rgba(121, 106, 198, 1)"
+    brand: "rgba(121, 106, 198, 1)",
+    logoColor:"#b01f1fff"
 }
 
-const {primary, secondary, tertiary, darkLight, brand} = Colors
+const {primary, secondary, tertiary, darkLight, brand, logoColor} = Colors
 
 export const StyledContainer = styled.View`
      flex: 1;
      padding: 25px;
      padding-top: ${StatusBarHeight + 10}px;
-     background-color: ${primary};
 `
 
 export const InnerContainer = styled.View`
@@ -36,10 +36,12 @@ export const PageTitle = styled.Text`
     font-size: 27px;
     text-align: center;
     font-weight: bold;
-    color: ${brand};
+    color: ${secondary};
 
     ${(props)=> props.home && `
         font-size:28px;
+        text-align:left;
+        color: ${primary};
     `}
 `
 export const SubTitle = styled.Text`
@@ -47,11 +49,14 @@ export const SubTitle = styled.Text`
     margin-bottom: 20px;
     letter-spacing: 1px;
     font-weight: bold;
-    color: ${secondary};
+    color: ${brand};
 
     ${(props)=> props.home && `
         margin-bottom:5px;
-        font-weight:normal;
+        margin-top:5px;
+        font-weight:bold;
+        font-size:16px;
+        color: ${tertiary}
     `}
 `
 
@@ -101,6 +106,13 @@ export const StyledButton = styled.TouchableOpacity`
     margin-vertical:5px;
     height:60px;
     align-items:center;
+    ${(props) => props.header && `
+        height: auto;
+        padding: 8px 16px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        margin: 0;
+    `}
 `
 
 export const ButtonText = styled.Text`
@@ -187,11 +199,16 @@ export const RadioInner = styled.View`
 
 //for safe locations
 export const LocationCard = styled.TouchableOpacity`
-  width: 100%;
-  padding: 15px;
-  background-color: ${tertiary};
-  border-radius: 10px;
-  margin-vertical: 8px;
+    width: 100%;
+    padding: 15px;
+    background-color: ${primary};
+    border-radius: 10px;
+    margin-vertical: 8px;
+    shadow-color: ${secondary};
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.1;
+    shadow-radius: 6px;
+    elevation: 8;
 `;
 
 export const LocationTitle = styled.Text`

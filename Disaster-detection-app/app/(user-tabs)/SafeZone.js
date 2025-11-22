@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Linking, Alert, Text } from "react-native";
+import { ScrollView, Linking, Alert, Text, StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import API from './../../src/api/api';
 
@@ -11,39 +11,7 @@ import {
   LocationDistance,
   LocationNumber,
 } from "./../../constants/styles" 
-
-// Example data
-const SAFE_LOCATIONS = [
-  {
-    id: 1,
-    name: "Community Shelter A",
-    lat: 31.5204,
-    lon: 74.3587,
-    number: "042-1234567",
-    description: "A safe place for community members during disasters.",
-    address: "123 Main St, Lahore",
-    capacity: 150
-  },
-  {
-    id: 2,
-    name: "Rescue Point B",
-    lat: 31.5090,
-    lon: 74.3400,
-    description: "Rescue point equipped with first aid.",
-    address: "45 Rescue Rd, Lahore",
-    capacity: 80
-  },
-  {
-    id: 3,
-    name: "Hospital XYZ",
-    lat: 31.4980,
-    lon: 74.3600,
-    number: "042-9876543",
-    description: "Emergency hospital with 24/7 services.",
-    address: "789 Health Ave, Lahore",
-    capacity: 300
-  },
-];
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 export default function SafeLocationsScreen() {
@@ -139,6 +107,10 @@ export default function SafeLocationsScreen() {
     };
 
     return (
+        <LinearGradient
+            colors={['#f8f7fc', '#ebe8f5', '#ddd8ee']}
+            style={styles.linearGradient}
+        >
         <StyledContainer>
             <PageTitle>Safe Locations Nearby</PageTitle>
 
@@ -160,5 +132,12 @@ export default function SafeLocationsScreen() {
                 ))}
             </ScrollView>
         </StyledContainer>
+        </LinearGradient>
     );
 }
+const styles = StyleSheet.create({
+    linearGradient: {
+        flex:1,
+        width: '100%',
+    },
+});

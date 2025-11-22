@@ -11,9 +11,21 @@ export default function AdminTabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        // tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarStyle: {
+          backgroundColor: '#796AC6',  // Your purple
+          borderTopWidth: 0,           // Remove top border
+          height: 60,
+          paddingTop:5,           
+        },
+        tabBarActiveTintColor: '#ffffff',      // Active icon/text color
+        tabBarInactiveTintColor: '#d1c4e9',    // Inactive icon/text color
+        tabBarLabelStyle: {
+          fontFamily: 'Poppins-Regular',
+          fontSize: 12,
+        },
       }}>
       <Tabs.Screen
         name="Home"

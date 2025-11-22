@@ -11,14 +11,15 @@ import {
     Line,
     HomeContainer,
     HomeImage,
-    Avatar
+    Avatar,
 } from "./../../constants/styles"
-import { View, StyleSheet, ActivityIndicator, Alert, Text, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, ImageBackground, Alert, Text, ScrollView, Dimensions } from 'react-native';
 // Uncomment for mobile
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 import API from "../../src/api/api"
 import { AuthContext } from './../../src/context/authContext';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Home = () => {
     const [location, setLocation] = useState(null);
@@ -125,13 +126,38 @@ const Home = () => {
     return (
         <>
             <StatusBar style='light'/>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
-                <View style={styles.header}>
-                    <PageTitle home={true}>Flood Risk Monitor</PageTitle>
-                    <SubTitle home={true}>
-                        📍 {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
-                    </SubTitle>
+            <View style={styles.headerWrapper}>
+            <ImageBackground 
+                source={require('./../../assets/images/img2.webp')}
+                style={styles.headerBackground}
+                imageStyle={styles.headerImage}>
+                <View style={styles.headerOverlay}>
+                    <View style={styles.headerContent}>
+                        <View style={styles.headerText}>
+                            <PageTitle home={true}>Flood Risk Monitor</PageTitle>
+                            <SubTitle home={true}>
+                                📍 {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+                            </SubTitle>
+                        </View>
+                        <StyledButton header={true} onPress={async()=>{
+                            await logout();
+                            setTimeout(() => {
+                                router.replace("/Login");
+                            }, 100);
+                        }}>
+                            <ButtonText style={styles.logout}>
+                                Log Out
+                            </ButtonText>
+                        </StyledButton>
+                    </View>
                 </View>
+            </ImageBackground>
+            </View>
+            <LinearGradient
+                colors={['#f8f7fc', '#ebe8f5', '#ddd8ee']}
+                style={styles.linearGradient}
+            >
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
 
                 {/* Current Risk Summary - Compact */}
                 {currentRisk && (
@@ -286,40 +312,70 @@ const Home = () => {
                         ))
                     )}
                 </View>
-
-                {/* Logout Section */}
-                <View style={styles.footerContainer}>
-                    <Avatar source={require('./../../assets/images/app-logo.png')} resizeMode="cover"/>
-                    <Line/>
-                    <StyledButton onPress={async()=>{
-                        await logout();
-                        setTimeout(() => {
-                            router.replace("/Login");
-                        }, 100);
-                    }}>
-                    <ButtonText>
-                            Log Out
-                        </ButtonText>
-                    </StyledButton>
-                </View>
             </ScrollView>
+            </LinearGradient>
         </>
     );
 };
 
 const styles = StyleSheet.create({
+    linearGradient: {
+        flex:1,
+        width: '100%',
+    },
+    headerWrapper: {
+        backgroundColor: '#796AC6',  // Needed for Android elevation
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 8,
+        zIndex: 10,  // Ensures shadow appears above content below
+    },
+    headerBackground: {
+        paddingTop: 60,
+        paddingBottom: 20,
+    
+    },
+    headerImage: {
+        opacity: 0.8,
+        resizeMode: 'cover',
+        
+    },
+    headerOverlay: {
+        backgroundColor: 'rgba(121, 106, 198, 0.7)',
+        // marginHorizontal: 20,
+        marginTop: -60,
+        marginBottom: -20,
+        paddingTop: 50,
+        paddingBottom: 20,
+        paddingHorizontal: 20,
+        
+    },
+    headerContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        
+    },
+    headerText: {
+        flex: 1,
+    },
+    logout: {
+        fontSize: 14,
+        color: '#fff',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+    },
+    avatar:{
+        flex:1
+    },
     scrollContainer: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        // backgroundColor: '#f5f5f5',
     },
     scrollContent: {
         paddingBottom: 40,
-    },
-    header: {
-        backgroundColor: '#bedeffff',
-        paddingTop: 60,
-        paddingBottom: 20,
-        paddingHorizontal: 20,
     },
     centered: {
         flex: 1,

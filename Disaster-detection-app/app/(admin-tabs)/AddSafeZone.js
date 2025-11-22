@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Linking,
+  StyleSheet
 } from "react-native";
 import * as Location from 'expo-location';
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -335,7 +336,7 @@ export default function AddSafeZone() {
   );
 
   return (
-    <StyledContainer>
+    <StyledContainer style={styles.background}>
       <FlatList
         data={safeZones}
         keyExtractor={(item) => item._id}
@@ -353,6 +354,9 @@ export default function AddSafeZone() {
 }
 
 const styles = {
+  background:{
+    backgroundColor:"#fff"
+  },
   label: { fontWeight: "bold", marginTop: 10, marginBottom: 4 },
   locationBtn: {
     flexDirection: "row",

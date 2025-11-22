@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/styles';
 import {
@@ -25,7 +25,7 @@ import {
   RadioOuter,
   RadioInner,
 } from '../constants/styles';
-
+import { LinearGradient } from 'expo-linear-gradient';
 import { AuthContext } from '../src/context/authContext'; // adjust path if your context is elsewhere
 import { useRouter } from 'expo-router';
 
@@ -40,12 +40,16 @@ const Signup = () => {
   const [msg, setMsg] = useState('');
 
   return (
-    <StyledContainer>
+    <LinearGradient
+        colors={['#f8f7fc', '#ebe8f5', '#ddd8ee']}
+        style={styles.linearGradient}
+    >
+    <StyledContainer style={styles.background}>
       <StatusBar style="dark" />
       <InnerContainer>
         <PageTitle>Disaster Detection App</PageTitle>
         <SubTitle>Account Signup</SubTitle>
-
+        <View style={styles.view}>
         <Formik
           initialValues={{
             fullName: '',
@@ -170,8 +174,10 @@ const Signup = () => {
             </StyledFormArea>
           )}
         </Formik>
+        </View>
       </InnerContainer>
     </StyledContainer>
+    </LinearGradient>
   );
 };
 
@@ -200,5 +206,34 @@ const RadioButton = ({ label, value, selected, onPress }) => {
     </TouchableOpacity>
   );
 };
+const styles = StyleSheet.create({
+  view:{
+        display:"flex",
+        flex:0,
+        minWidth:"auto",
+        minHeight:"auto",
+        borderWidth: 1,
+        borderRadius: 12,
+        borderColor: "#ddd",
+        justifyContent:"center",
+        backgroundColor: '#ffffffff',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        paddingHorizontal:12,
+        paddingVertical:30,
 
+    },
+    background:{
+        backgroundColor:"none"
+    },  
+    linearGradient: {
+        flex:1,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});
 export default Signup;
