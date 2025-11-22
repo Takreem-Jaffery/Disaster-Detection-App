@@ -12,13 +12,13 @@ import {
     HomeContainer,
     HomeImage,
     Avatar
-} from "./../../../constants/styles"
+} from "../../constants/styles"
 import { View, StyleSheet, ActivityIndicator, Alert, Text, ScrollView, Dimensions } from 'react-native';
 // Uncomment for mobile
-// import MapView, { Marker, Circle } from 'react-native-maps';
+import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
-import API from "./../../../src/api/api"
-import { AuthContext } from './../../../src/context/authContext';
+import API from "../../src/api/api"
+import { AuthContext } from './../../src/context/authContext';
 
 const Home = () => {
     const [location, setLocation] = useState(null);
@@ -28,12 +28,7 @@ const Home = () => {
     const [currentRisk, setCurrentRisk] = useState(null);
     const [dataLoading, setDataLoading] = useState(false);
     const router = useRouter();
-    const {user} = useContext(AuthContext);
-    useEffect(() => {
-        if (!user || user.role !== 'rescue-authority') {
-            router.replace('/user/Home'); // redirect unauthorized user
-        }
-    }, [user]);
+    const { logout } = useContext(AuthContext);
     
     useEffect(() => {
         (async () => {
@@ -169,13 +164,12 @@ const Home = () => {
                     ) : (
                         <>
                             {/* FOR WEB: Show grid visualization */}
-                            <View style={styles.webMapPlaceholder}>
+                            {/* <View style={styles.webMapPlaceholder}>
                                 <Text style={styles.webMapText}>📍 Map View</Text>
                                 <Text style={styles.webMapSubtext}>
                                     (Enable for mobile with MapView)
                                 </Text>
                                 
-                                {/* Simple visual grid representation */}
                                 <View style={styles.gridMap}>
                                     {areaRiskData.map((area, index) => (
                                         <View 
@@ -197,10 +191,10 @@ const Home = () => {
                                         </View>
                                     ))}
                                 </View>
-                            </View>
+                            </View> */}
 
                             {/* FOR MOBILE: Uncomment this section when deploying to mobile */}
-                            {/* 
+                            
                             <MapView
                                 style={styles.map}
                                 initialRegion={{
@@ -233,7 +227,7 @@ const Home = () => {
                                     pinColor="blue"
                                 />
                             </MapView>
-                            */}
+                           
                         </>
                     )}
                     
@@ -294,9 +288,12 @@ const Home = () => {
 
                 {/* Logout Section */}
                 <View style={styles.footerContainer}>
-                    <Avatar source={require('./../../../assets/images/app-logo.png')} resizeMode="cover"/>
+                    <Avatar source={require('./../../assets/images/app-logo.png')} resizeMode="cover"/>
                     <Line/>
-                    <StyledButton onPress={()=>{router.replace("/Login")}}>
+                    <StyledButton onPress={async()=>{
+                        await logout();
+                        router.replace("/Login")
+                    }}>
                         <ButtonText>
                             Log Out
                         </ButtonText>

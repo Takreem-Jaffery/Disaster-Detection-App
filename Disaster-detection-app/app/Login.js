@@ -3,7 +3,7 @@ import {useNavigation} from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {Formik} from 'formik'
-import {View, Text} from 'react-native'
+import {View, Text, Alert} from 'react-native'
 import {Octicons,Ionicons} from '@expo/vector-icons';
 import {Colors} from '../constants/styles'
 import { useContext } from 'react';
@@ -60,20 +60,24 @@ const Login = ()=>{
                         setMsg('');
                         try {
                             setSubmitting(true);
+                            
+                            const data = await login({ email, password }); 
+                            // Alert.alert("Debug", JSON.stringify(data, null, 2));
+                            // console.log("Login response:", data);
+                            // console.log("User role:", data.role);
+                            // const response = await API.post('/auth/login', { email, password });
 
-                            const response = await API.post('/auth/login', { email, password });
+                            // const data = response.data;
 
-                            const data = response.data;
-
-                            // Save token and role
-                            await AsyncStorage.setItem('token', data.token);
-                            await AsyncStorage.setItem('userRole', data.user.role);
+                            // // Save token and role
+                            // await AsyncStorage.setItem('token', data.token);
+                            // await AsyncStorage.setItem('userRole', data.user.role);
 
                             // Navigate based on role
-                            if (data.user.role === 'rescue-authority') {
-                                router.push('/admin/Home');
+                            if (data.role === 'rescue-authority') {
+                                router.push('/(admin-tabs)/Home');
                             } else {
-                                router.push('/user/Home');
+                                router.push('/(user-tabs)/Home');
                             }
                         } catch (error) {
                             setMsg(error.message);

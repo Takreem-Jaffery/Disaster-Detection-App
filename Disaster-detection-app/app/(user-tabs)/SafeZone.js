@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, Linking, Alert, Text } from "react-native";
 import * as Location from "expo-location";
-import API from '../../../src/api/api';
+import API from './../../src/api/api';
 
 import {
   StyledContainer,
@@ -10,7 +10,7 @@ import {
   LocationTitle,
   LocationDistance,
   LocationNumber,
-} from "./../../../constants/styles" 
+} from "./../../constants/styles" 
 
 // Example data
 const SAFE_LOCATIONS = [
