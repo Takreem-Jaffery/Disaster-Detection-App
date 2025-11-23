@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "994578331416",
+    "project_id": "disaster-detection-app",
+    "storage_bucket": "disaster-detection-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994578331416:android:f462ec48cf1f8391a2106d",
+        "android_client_info": {
+          "package_name": "com.anonymous.Disasterdetectionapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCo32U39kJ92B3YZT9kcdDzuH6tuVU_Q08"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

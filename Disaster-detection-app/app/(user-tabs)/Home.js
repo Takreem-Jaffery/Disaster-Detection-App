@@ -194,7 +194,7 @@ const Home = () => {
                             </View> */}
 
                             {/* FOR MOBILE: Uncomment this section when deploying to mobile */}
-                            
+                           { /*
                             <MapView
                                 style={styles.map}
                                 initialRegion={{
@@ -226,7 +226,12 @@ const Home = () => {
                                     title="Your Location"
                                     pinColor="blue"
                                 />
-                            </MapView>
+                            </MapView>*/}
+
+                            {/* Show placeholder instead */}
+<View style={styles.mapPlaceholder}>
+    <Text>Map disabled - needs Google API key</Text>
+</View>
                            
                         </>
                     )}
