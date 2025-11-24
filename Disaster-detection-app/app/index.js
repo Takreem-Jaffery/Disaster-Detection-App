@@ -1,4 +1,4 @@
-// FILE: app/index.tsx
+
 import { useContext, useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';

@@ -96,7 +96,7 @@ export const updatePrecaution = async (id, precautionData) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          'x-auth-token': token,
+          'Authorization': `Bearer ${token}`
         },
       }
     );
